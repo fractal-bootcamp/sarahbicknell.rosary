@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './App.css'
+import { prayersText } from './prayers.tsx'
+import { TextAnimation } from "./TextAnimation";
+
 
 
 // initialize an array of 59 beads with boolean value
@@ -17,13 +20,40 @@ import './App.css'
 // all other beads : Hail Mary 
 
 
+const ourFatherIndices = [1, 5, 16, 27, 38, 49];
+const gloryBeIndices = [15, 26, 37, 48, 60];
+
 export default function displayRosary() {
   const [beads, setBeads] = useState(Array(61).fill(false)) 
+  const [currentPrayer, setCurrentPrayer] = useState(prayersText["SoCC"])
+  const [visible, setVisible] = useState(true)
 
   function handleClick(index: number) {
     const newBeads = [...beads]
     newBeads[index] = !newBeads[index]
     setBeads(newBeads)
+
+    let newPrayer; 
+
+    if (ourFatherIndices.includes(index + 1)) {
+      newPrayer = prayersText["Our Father"]
+    } else if (gloryBeIndices.includes(index + 1)) {
+      newPrayer = prayersText["Glory Be"]
+    } else if (ourFatherIndices.includes(index + 1)){
+      newPrayer = prayersText["Hail Holy Queen"]
+    } else if (index === 60) {
+      newPrayer = ""
+    } else {
+      newPrayer = prayersText["Hail Mary"]
+    }
+
+    setCurrentPrayer(newPrayer)
+
+  }
+
+  function handleReset() {
+    setBeads(Array(61).fill(false))
+    setCurrentPrayer("")
   }
 
   return (
@@ -40,7 +70,10 @@ export default function displayRosary() {
         ))}
       </div>
       <div> 
-
+        <button onClick={handleReset}> Reset </button>
+      </div>
+      <div className="prayer"> 
+        <TextAnimation text={currentPrayer} />
       </div>
     </div>
   )
